@@ -29,5 +29,7 @@
     "supabase:stop": "supabase:stop",
     "supabase:commit": "supabase:commmit",
     "generate": "graphql-codegen --config codegen.json"
-  }
+  },
+  "repository": "https://github.com/SoraKumo001/supabase-test01",
+  "author": "SoraKumo <info@croud.jp>"
 }
