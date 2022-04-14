@@ -1,0 +1,37 @@
+.root {
+  position: relative;
+  border: solid yellowgreen 1px;
+  border-radius: 4px;
+  width: 256px;
+  height: 256px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.3));
+  .close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .title {
+    font-weight: bold;
+    padding: 8px;
+    background: lightyellow;
+    text-overflow: ellipsis;
+    height: 1.5em;
+  }
+  .date {
+    text-align: right;
+    background: lightgoldenrodyellow;
+    padding: 4px;
+  }
+  .description {
+    padding: 4px;
+    overflow-y: auto;
+    background: lightyellow;
+    flex: 1;
+    white-space: pre-wrap;
+  }
+}

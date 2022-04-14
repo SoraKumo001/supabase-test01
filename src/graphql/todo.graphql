@@ -1,0 +1,30 @@
+fragment todo on Todo {
+  __typename
+  id
+  title
+  description
+  created_at
+}
+mutation insertTodo($value: TodoInsertInput!) {
+  insertIntoTodoCollection(objects: [$value]) {
+    records {
+      ...todo
+    }
+  }
+}
+query queryTodo {
+  todoCollection {
+    edges {
+      node {
+        ...todo
+      }
+    }
+  }
+}
+mutation deleteTodo($id: BigInt) {
+  deleteFromTodoCollection(filter: { id: { eq: $id } }) {
+    records {
+      ...todo
+    }
+  }
+}
