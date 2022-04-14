@@ -5,7 +5,7 @@
 const config = {
   experimental: {
     cpus: 4,
-    //   runtime: "edge",
+    runtime: "edge",
   },
 };
 module.exports = config;
