@@ -32,12 +32,19 @@ CREATE POLICY "Enable access to all users"
     TO public
     USING (true);
 
-CREATE POLICY "Enable insert for authenticated users only"
+CREATE POLICY "Enable INSERT for authenticated users only"
+    ON public."Todo"
+    AS PERMISSIVE
+    FOR INSERT
+    TO public
+    WITH CHECK ((auth.role() = 'authenticated'::text));
+
+CREATE POLICY "Enable DELETE/UPDATE for authenticated users only"
     ON public."Todo"
     AS PERMISSIVE
     FOR ALL
     TO public
-    WITH CHECK ((auth.role() = 'authenticated'::text));
+    USING ((auth.role() = 'authenticated'::text));
 
 ALTER TABLE IF EXISTS public."Todo"
     ENABLE ROW LEVEL SECURITY;
