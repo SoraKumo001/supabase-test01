@@ -1,0 +1,16 @@
+.root {
+  border: solid 1px #dddddd;
+  background: #aaaaaa;
+  padding: 4px;
+
+  .title {
+    font-size: 24px;
+    color: white;
+    font-weight: bold;
+  }
+  .error {
+    color: red;
+    line-height: 32px;
+    font-weight: bold;
+  }
+}

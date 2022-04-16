@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { TodoList } from "../TodoList";
 import {
   useDeleteTodoMutation,
@@ -9,6 +9,7 @@ import styled from "./index.module.scss";
 
 export const TodoContainer = () => {
   const { data, refetch } = useQueryTodoQuery();
+  const [error, setError] = useState<string>();
   const [insertTodo] = useInsertTodoMutation();
   const [deleteTodo] = useDeleteTodoMutation();
   const todoList = useMemo(() => {
@@ -30,6 +31,8 @@ export const TodoContainer = () => {
         (e.target as HTMLFormElement).reset();
         refetch();
       },
+    }).catch((v) => {
+      setError(String(v));
     });
     e.preventDefault();
   };
@@ -39,12 +42,15 @@ export const TodoContainer = () => {
       update: () => {
         refetch();
       },
+    }).catch((v) => {
+      setError(String(v));
     });
   };
   return (
     <div className={styled.root}>
       <form onSubmit={handleSubmit}>
         <button>Insert</button>
+        <span className={styled.error}>{error}</span>
         <div>
           <input className={styled.title} id="title" placeholder="Title" />
         </div>

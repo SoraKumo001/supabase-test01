@@ -24,3 +24,20 @@ GRANT ALL ON TABLE public."Todo" TO authenticated;
 GRANT ALL ON TABLE public."Todo" TO postgres;
 
 GRANT ALL ON TABLE public."Todo" TO service_role;
+
+CREATE POLICY "Enable access to all users"
+    ON public."Todo"
+    AS PERMISSIVE
+    FOR SELECT
+    TO public
+    USING (true);
+
+CREATE POLICY "Enable insert for authenticated users only"
+    ON public."Todo"
+    AS PERMISSIVE
+    FOR ALL
+    TO public
+    WITH CHECK ((auth.role() = 'authenticated'::text));
+
+ALTER TABLE IF EXISTS public."Todo"
+    ENABLE ROW LEVEL SECURITY;

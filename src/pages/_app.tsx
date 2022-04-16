@@ -1,15 +1,10 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  InMemoryCache,
-  NormalizedCacheObject,
-} from "@apollo/client";
+import { InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 import { getMarkupFromTree } from "@apollo/client/react/ssr";
 import { AppContext, AppProps } from "next/app";
-import React, { useMemo } from "react";
-const { renderToReadableStream } = require("react-dom/server.browser");
-const URI_ENDPOINT = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const ApiKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
+import React from "react";
+import { renderToString } from "react-dom/server.browser";
+import { AuthContainer } from "../components/AuthConteiner.tsx";
+import { ApolloCustomProvider } from "../libs/ApolloCustomProvider";
 
 const App = (
   props: AppProps & {
@@ -18,37 +13,30 @@ const App = (
   }
 ) => {
   const { Component, cache, memoryCache } = props;
-  const client = useMemo(
-    () =>
-      new ApolloClient({
-        uri: URI_ENDPOINT,
-        cache: memoryCache || new InMemoryCache().restore(cache || {}),
-        headers: { apiKey: ApiKey! },
-      }),
-    []
-  );
+
   return (
-    <ApolloProvider client={client}>
+    <ApolloCustomProvider cache={cache} memoryCache={memoryCache}>
+      <AuthContainer />
       <Component />
-    </ApolloProvider>
+    </ApolloCustomProvider>
   );
 };
 
-App.getInitialProps = async ({ Component, router }: AppContext) => {
-  if (typeof window !== "undefined") return {};
-  const memoryCache = new InMemoryCache();
-  await getMarkupFromTree({
-    tree: (
-      <App
-        Component={Component}
-        pageProps={undefined}
-        router={router}
-        cache={{}}
-        memoryCache={memoryCache}
-      />
-    ),
-    renderFunction: renderToReadableStream,
-  }).catch(() => {});
-  return { cache: memoryCache.extract() };
-};
+// App.getInitialProps = async ({ Component, router }: AppContext) => {
+//   if (typeof window !== "undefined") return {};
+//   const memoryCache = new InMemoryCache();
+//   await getMarkupFromTree({
+//     tree: (
+//       <App
+//         Component={Component}
+//         pageProps={undefined}
+//         router={router}
+//         cache={{}}
+//         memoryCache={memoryCache}
+//       />
+//     ),
+//     renderFunction: renderToString,
+//   }).catch(() => {});
+//   return { cache: memoryCache.extract() };
+// };
 export default App;
