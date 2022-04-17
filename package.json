@@ -10,6 +10,7 @@
     "@mui/icons-material": "^5.6.1",
     "@mui/material": "^5.6.1",
     "graphql": "^16.3.0",
+    "jwt-decode": "^3.1.2",
     "next": "^12.1.5",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -36,7 +37,7 @@
     "supabase:stop": "supabase:stop",
     "supabase:commit": "supabase:commmit",
     "generate": "graphql-codegen --config codegen.json",
-    "create:user": "ts-node -s bin/create-user a@a a"
+    "create:user": "ts-node -s bin/create-user a@example.com a && ts-node -s bin/create-user b@example.com b"
   },
   "repository": "https://github.com/SoraKumo001/supabase-test01",
   "author": "SoraKumo <info@croud.jp>"

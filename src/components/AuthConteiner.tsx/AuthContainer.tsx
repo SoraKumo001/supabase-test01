@@ -1,20 +1,24 @@
 import { createClient } from "@supabase/supabase-js";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLoading } from "../../hooks/useLoading";
+import { useLogin } from "../../hooks/useLogin";
 import { useNotification } from "../../hooks/useNotification";
-import { useToken } from "../../libs/ApolloCustomProvider";
+import { useSystemSelector } from "../../hooks/useSystemSelector";
 import styled from "./index.module.scss";
 
 export const AuthContainer = () => {
-  const [token, setToken] = useState<string>();
-  const [error, setError] = useState<string>();
-  const [loading, setLoading] = useState<boolean>(false);
-  useToken(token);
+  const { login, logout, loading, error } = useLogin();
+  const user = useSystemSelector((v) => v.auth?.user);
   useLoading([loading]);
   useNotification(error);
   return (
     <div className={styled.root}>
-      <div className={styled.title}>supabase GraphQL Test</div>
+      <div className={styled.title}>
+        supabase GraphQL Test{" "}
+        <a href="https://github.com/SoraKumo001/supabase-test01">
+          https://github.com/SoraKumo001/supabase-test01
+        </a>
+      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -24,42 +28,40 @@ export const AuthContainer = () => {
             logout: HTMLButtonElement;
           };
           if (!form.logout) {
-            const supabase = createClient(
-              process.env.NEXT_PUBLIC_SUPABASE_URL!,
-              process.env.NEXT_PUBLIC_SUPABASE_KEY!
-            );
             const email = form.email.value;
             const password = form.password.value;
-            setLoading(true);
-            setError(undefined);
-            supabase.auth.signIn({ email, password }).then((v) => {
-              setError(v.error?.message);
-              setToken(v.session?.access_token);
-              setLoading(false);
-            });
+            login(email, password);
           } else {
-            setToken(undefined);
+            logout();
           }
         }}
       >
-        {!token ? (
+        {!user?.sub ? (
           <>
             <button key="login" id="login">
               Login
             </button>
-            <input id="email" placeholder="email" defaultValue="a@a" />
+            <input
+              id="email"
+              placeholder="email"
+              defaultValue="a@example.com"
+            />
             <input
               id="password"
               type="password"
               placeholder="password"
               defaultValue="a"
             />
-            <span> ← ID:a@a PASSWORD:a</span>
+            <span> ← ID1:a@example.com PASSWORD:a</span>
+            <span> ID2:b@example.com PASSWORD:b</span>
           </>
         ) : (
-          <button key="logout" id="logout">
-            Logout
-          </button>
+          <div>
+            <button key="logout" id="logout">
+              Logout
+            </button>
+            <span className={styled.userName}>{user.email}</span>
+          </div>
         )}
       </form>
     </div>

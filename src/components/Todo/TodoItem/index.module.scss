@@ -22,6 +22,9 @@
   display: flex;
   flex-direction: column;
   filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.3));
+  padding: 1px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  background: lightyellow;
   .close {
     position: absolute;
     top: 8px;
@@ -29,33 +32,54 @@
     cursor: pointer;
     font-weight: bold;
   }
+  .input {
+    display: block;
+    box-sizing: border-box;
+    border: none;
+    &:focus {
+      outline: none;
+    }
+  }
   .title {
+    @extend .input;
+    font-size: 24px;
     font-weight: bold;
     padding: 8px;
     background: #ffff88;
     text-overflow: ellipsis;
     height: 1.5em;
   }
+  .description {
+    @extend .input;
+    padding: 4px;
+    overflow-y: auto;
+    background: transparent;
+    flex: 1;
+    white-space: pre-wrap;
+    resize: none;
+  }
   .name {
-    background: #ffff55;
     font-size: 12px;
     padding: 4px;
+    text-align: right;
   }
   .date {
     text-align: right;
     background: lightgoldenrodyellow;
     padding: 4px;
   }
-  .description {
-    padding: 4px;
-    overflow-y: auto;
-    background: lightyellow;
-    flex: 1;
-    white-space: pre-wrap;
-  }
+
   &.delete {
     opacity: 0;
     transform: scale(0);
     transform-origin: center;
+  }
+  &:not(.published) {
+    border-color: red;
+  }
+  .center {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 }

@@ -1,6 +1,7 @@
 fragment user on User {
   id
   email
+  raw_user_meta_data
   __typename
 }
 fragment todo on Todo {
@@ -9,9 +10,25 @@ fragment todo on Todo {
   title
   description
   created_at
-  user_id
+  published
   user {
     ...user
+  }
+}
+mutation updateTodo(
+  $id: BigInt!
+  $title: String
+  $description: String
+  $published: Boolean
+) {
+  updateTodoCollection(
+    set: { title: $title, description: $description, published: $published }
+    filter: { id: { eq: $id } }
+  ) {
+    records {
+      ...todo
+    }
+    affectedCount
   }
 }
 mutation insertTodo($value: TodoInsertInput!) {
@@ -30,7 +47,7 @@ query queryTodo {
     }
   }
 }
-mutation deleteTodo($id: BigInt) {
+mutation deleteTodo($id: BigInt!) {
   deleteFromTodoCollection(filter: { id: { eq: $id } }) {
     records {
       ...todo

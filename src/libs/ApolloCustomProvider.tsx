@@ -4,14 +4,7 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useMemo, useRef } from "react";
 const URI_ENDPOINT = process.env.NEXT_PUBLIC_SUPABASE_URL + "/graphql/v1";
 const ApiKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
 const context = createContext<
@@ -22,12 +15,13 @@ interface Props {
   cache?: NormalizedCacheObject;
   memoryCache?: InMemoryCache;
 }
+import { useSystemSelector } from "../hooks/useSystemSelector";
 export const ApolloCustomProvider = ({
   memoryCache,
   cache,
   children,
 }: Props) => {
-  const [token, setToken] = useState<string>();
+  const token = useSystemSelector((v) => v.auth?.token);
   const cacheRef = useRef(cache);
   const client = useMemo(() => {
     const client = new ApolloClient({
@@ -40,24 +34,35 @@ export const ApolloCustomProvider = ({
     cacheRef.current = undefined;
     return client;
   }, [token]);
-  return (
-    <context.Provider value={setToken}>
-      <ApolloProvider client={client}>{children}</ApolloProvider>
-    </context.Provider>
-  );
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
 
-export const useToken = (token?: string) => {
-  const dispatch = useContext(context);
-  const oldToken = useRef(token);
-  useEffect(() => {
-    dispatch(token);
-  }, [token]);
+// export const useToken = (token?: string) => {
+//   const dispatch = useContext(context);
+//   const oldToken = useRef(token);
+//   useEffect(() => {
+//     let newToken = token;
+//     if (token) {
+//       const exp = (jwt_decode(token) as { exp: number })?.exp;
+//       if (exp) {
+//         const date = new Date();
+//         const now = date.getTime();
+//         date.setUTCMilliseconds(exp);
+//         if (date.getTime() < now) {
+//           newToken = undefined;
+//         }
+//       }
+//     }
+//     dispatch(newToken);
+//     document.cookie = newToken
+//       ? `supabase_token=${newToken}; max-age=3600`
+//       : "supabase_token=; max-age=0";
+//   }, [token]);
 
-  if (typeof window === "undefined") {
-    if (oldToken.current !== token) {
-      dispatch(token);
-      oldToken.current = token;
-    }
-  }
-};
+//   if (typeof window === "undefined") {
+//     if (oldToken.current !== token) {
+//       dispatch(token);
+//       oldToken.current = token;
+//     }
+//   }
+// };
