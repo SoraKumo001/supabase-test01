@@ -1,9 +1,18 @@
+fragment user on User {
+  id
+  email
+  __typename
+}
 fragment todo on Todo {
   __typename
   id
   title
   description
   created_at
+  user_id
+  user {
+    ...user
+  }
 }
 mutation insertTodo($value: TodoInsertInput!) {
   insertIntoTodoCollection(objects: [$value]) {

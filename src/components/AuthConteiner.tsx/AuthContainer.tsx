@@ -12,7 +12,6 @@ export const AuthContainer = () => {
     <div className={styled.root}>
       <div className={styled.title}>supabase GraphQL Test</div>
       <form
-        autoComplete="off"
         onSubmit={(e) => {
           e.preventDefault();
           const form = e.target as HTMLFormElement & {
@@ -38,14 +37,23 @@ export const AuthContainer = () => {
       >
         {!token ? (
           <>
-            <button>Login</button>
-            <input id="email" placeholder="email" />
-            <input id="password" type="password" placeholder="password" />
+            <button key="login" id="login">
+              Login
+            </button>
+            <input id="email" placeholder="email" defaultValue="a@a" />
+            <input
+              id="password"
+              type="password"
+              placeholder="password"
+              defaultValue="a"
+            />
             <span> ← ID:a@a PASSWORD:a</span>
             {error && <div className={styled.error}>{error}</div>}
           </>
         ) : (
-          <button id="logout">Logout</button>
+          <button key="logout" id="logout">
+            Logout
+          </button>
         )}
       </form>
     </div>

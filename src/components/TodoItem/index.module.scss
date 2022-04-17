@@ -18,9 +18,14 @@
   .title {
     font-weight: bold;
     padding: 8px;
-    background: lightyellow;
+    background: #ffff88;
     text-overflow: ellipsis;
     height: 1.5em;
+  }
+  .name {
+    background: #ffff55;
+    font-size: 12px;
+    padding: 4px;
   }
   .date {
     text-align: right;

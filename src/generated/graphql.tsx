@@ -93,10 +93,16 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Deletes zero or more records from the collection */
   deleteFromTodoCollection: TodoDeleteResponse;
+  /** Deletes zero or more records from the collection */
+  deleteFromUserCollection: UserDeleteResponse;
   /** Adds one or more `TodoInsertResponse` records to the collection */
   insertIntoTodoCollection?: Maybe<TodoInsertResponse>;
+  /** Adds one or more `UserInsertResponse` records to the collection */
+  insertIntoUserCollection?: Maybe<UserInsertResponse>;
   /** Updates zero or more records in the collection */
   updateTodoCollection: TodoUpdateResponse;
+  /** Updates zero or more records in the collection */
+  updateUserCollection: UserUpdateResponse;
 };
 
 
@@ -108,8 +114,21 @@ export type MutationDeleteFromTodoCollectionArgs = {
 
 
 /** The root type for creating and mutating data */
+export type MutationDeleteFromUserCollectionArgs = {
+  atMost?: Scalars['Int'];
+  filter?: InputMaybe<UserFilter>;
+};
+
+
+/** The root type for creating and mutating data */
 export type MutationInsertIntoTodoCollectionArgs = {
   objects: Array<TodoInsertInput>;
+};
+
+
+/** The root type for creating and mutating data */
+export type MutationInsertIntoUserCollectionArgs = {
+  objects: Array<UserInsertInput>;
 };
 
 
@@ -118,6 +137,14 @@ export type MutationUpdateTodoCollectionArgs = {
   atMost?: Scalars['Int'];
   filter?: InputMaybe<TodoFilter>;
   set: TodoUpdateInput;
+};
+
+
+/** The root type for creating and mutating data */
+export type MutationUpdateUserCollectionArgs = {
+  atMost?: Scalars['Int'];
+  filter?: InputMaybe<UserFilter>;
+  set: UserUpdateInput;
 };
 
 /** Defines a per-field sorting order */
@@ -141,6 +168,8 @@ export type Query = {
   __typename?: 'Query';
   /** A pagable collection of type `Todo` */
   todoCollection?: Maybe<TodoConnection>;
+  /** A pagable collection of type `User` */
+  userCollection?: Maybe<UserConnection>;
 };
 
 
@@ -152,6 +181,17 @@ export type QueryTodoCollectionArgs = {
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Array<TodoOrderBy>>;
+};
+
+
+/** The root type for querying data */
+export type QueryUserCollectionArgs = {
+  after?: InputMaybe<Scalars['Cursor']>;
+  before?: InputMaybe<Scalars['Cursor']>;
+  filter?: InputMaybe<UserFilter>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Array<UserOrderBy>>;
 };
 
 /** Boolean expression comparing fields on type "String" */
@@ -176,10 +216,12 @@ export type TimeFilter = {
 
 export type Todo = {
   __typename?: 'Todo';
-  created_at: Scalars['Datetime'];
-  description: Scalars['String'];
+  created_at?: Maybe<Scalars['Datetime']>;
+  description?: Maybe<Scalars['String']>;
   id: Scalars['BigInt'];
-  title: Scalars['String'];
+  title?: Maybe<Scalars['String']>;
+  user?: Maybe<User>;
+  user_id: Scalars['UUID'];
 };
 
 export type TodoConnection = {
@@ -207,12 +249,14 @@ export type TodoFilter = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<BigIntFilter>;
   title?: InputMaybe<StringFilter>;
+  user_id?: InputMaybe<UuidFilter>;
 };
 
 export type TodoInsertInput = {
   created_at?: InputMaybe<Scalars['Datetime']>;
   description?: InputMaybe<Scalars['String']>;
   title?: InputMaybe<Scalars['String']>;
+  user_id?: InputMaybe<Scalars['UUID']>;
 };
 
 export type TodoInsertResponse = {
@@ -228,12 +272,14 @@ export type TodoOrderBy = {
   description?: InputMaybe<OrderByDirection>;
   id?: InputMaybe<OrderByDirection>;
   title?: InputMaybe<OrderByDirection>;
+  user_id?: InputMaybe<OrderByDirection>;
 };
 
 export type TodoUpdateInput = {
   created_at?: InputMaybe<Scalars['Datetime']>;
   description?: InputMaybe<Scalars['String']>;
   title?: InputMaybe<Scalars['String']>;
+  user_id?: InputMaybe<Scalars['UUID']>;
 };
 
 export type TodoUpdateResponse = {
@@ -250,27 +296,109 @@ export type UuidFilter = {
   neq?: InputMaybe<Scalars['UUID']>;
 };
 
-export type TodoFragment = { __typename: 'Todo', id: any, title: string, description: string, created_at: any };
+export type User = {
+  __typename?: 'User';
+  email?: Maybe<Scalars['String']>;
+  id: Scalars['UUID'];
+  todoCollection?: Maybe<TodoConnection>;
+};
+
+
+export type UserTodoCollectionArgs = {
+  after?: InputMaybe<Scalars['Cursor']>;
+  before?: InputMaybe<Scalars['Cursor']>;
+  filter?: InputMaybe<TodoFilter>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Array<TodoOrderBy>>;
+};
+
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  edges: Array<UserEdge>;
+  pageInfo: PageInfo;
+};
+
+export type UserDeleteResponse = {
+  __typename?: 'UserDeleteResponse';
+  /** Count of the records impacted by the mutation */
+  affectedCount: Scalars['Int'];
+  /** Array of records impacted by the mutation */
+  records: Array<User>;
+};
+
+export type UserEdge = {
+  __typename?: 'UserEdge';
+  cursor: Scalars['String'];
+  node?: Maybe<User>;
+};
+
+export type UserFilter = {
+  email?: InputMaybe<StringFilter>;
+  id?: InputMaybe<UuidFilter>;
+};
+
+export type UserInsertInput = {
+  email?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['UUID']>;
+};
+
+export type UserInsertResponse = {
+  __typename?: 'UserInsertResponse';
+  /** Count of the records impacted by the mutation */
+  affectedCount: Scalars['Int'];
+  /** Array of records impacted by the mutation */
+  records: Array<User>;
+};
+
+export type UserOrderBy = {
+  email?: InputMaybe<OrderByDirection>;
+  id?: InputMaybe<OrderByDirection>;
+};
+
+export type UserUpdateInput = {
+  email?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['UUID']>;
+};
+
+export type UserUpdateResponse = {
+  __typename?: 'UserUpdateResponse';
+  /** Count of the records impacted by the mutation */
+  affectedCount: Scalars['Int'];
+  /** Array of records impacted by the mutation */
+  records: Array<User>;
+};
+
+export type UserFragment = { __typename: 'User', id: any, email?: string | null };
+
+export type TodoFragment = { __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, user_id: any, user?: { __typename: 'User', id: any, email?: string | null } | null };
 
 export type InsertTodoMutationVariables = Exact<{
   value: TodoInsertInput;
 }>;
 
 
-export type InsertTodoMutation = { __typename?: 'Mutation', insertIntoTodoCollection?: { __typename?: 'TodoInsertResponse', records: Array<{ __typename: 'Todo', id: any, title: string, description: string, created_at: any }> } | null };
+export type InsertTodoMutation = { __typename?: 'Mutation', insertIntoTodoCollection?: { __typename?: 'TodoInsertResponse', records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, user_id: any, user?: { __typename: 'User', id: any, email?: string | null } | null }> } | null };
 
 export type QueryTodoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type QueryTodoQuery = { __typename?: 'Query', todoCollection?: { __typename?: 'TodoConnection', edges: Array<{ __typename?: 'TodoEdge', node?: { __typename: 'Todo', id: any, title: string, description: string, created_at: any } | null }> } | null };
+export type QueryTodoQuery = { __typename?: 'Query', todoCollection?: { __typename?: 'TodoConnection', edges: Array<{ __typename?: 'TodoEdge', node?: { __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, user_id: any, user?: { __typename: 'User', id: any, email?: string | null } | null } | null }> } | null };
 
 export type DeleteTodoMutationVariables = Exact<{
   id?: InputMaybe<Scalars['BigInt']>;
 }>;
 
 
-export type DeleteTodoMutation = { __typename?: 'Mutation', deleteFromTodoCollection: { __typename?: 'TodoDeleteResponse', records: Array<{ __typename: 'Todo', id: any, title: string, description: string, created_at: any }> } };
+export type DeleteTodoMutation = { __typename?: 'Mutation', deleteFromTodoCollection: { __typename?: 'TodoDeleteResponse', records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, user_id: any, user?: { __typename: 'User', id: any, email?: string | null } | null }> } };
 
+export const UserFragmentDoc = gql`
+    fragment user on User {
+  id
+  email
+  __typename
+}
+    `;
 export const TodoFragmentDoc = gql`
     fragment todo on Todo {
   __typename
@@ -278,8 +406,12 @@ export const TodoFragmentDoc = gql`
   title
   description
   created_at
+  user_id
+  user {
+    ...user
+  }
 }
-    `;
+    ${UserFragmentDoc}`;
 export const InsertTodoDocument = gql`
     mutation insertTodo($value: TodoInsertInput!) {
   insertIntoTodoCollection(objects: [$value]) {
