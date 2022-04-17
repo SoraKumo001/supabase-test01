@@ -65,21 +65,6 @@ CREATE POLICY "Enable access to all users"
     TO public
     USING (true);
 
-CREATE FUNCTION public.handle_users_update()
-  returns trigger as $$
-  begin
-    IF (TG_OP = 'DELETE') THEN
-      delete from public."User" where id=old.id;
-      return old;
-    ELSIF (TG_OP = 'UPDATE') THEN
-      update public."User" set email=NEW.email;
-    ELSIF (TG_OP = 'INSERT') THEN
-      insert into public."User"(id, email) values(NEW.id,NEW.email);
-    END IF;
-    return new;
-  end;
-  $$ language plpgsql security definer;
-
 CREATE trigger on_auth_user_update
   AFTER INSERT OR UPDATE OR DELETE ON auth.users
   for each row execute procedure public.handle_users_update();
