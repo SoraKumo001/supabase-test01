@@ -28,17 +28,18 @@ export const ApolloCustomProvider = ({
   children,
 }: Props) => {
   const [token, setToken] = useState<string>();
-  const client = useMemo(
-    () =>
-      new ApolloClient({
-        uri: URI_ENDPOINT,
-        cache: memoryCache || new InMemoryCache().restore(cache || {}),
-        headers: token
-          ? { apiKey: ApiKey!, Authorization: `Bearer ${token}` }
-          : { apiKey: ApiKey! },
-      }),
-    [token]
-  );
+  const cacheRef = useRef(cache);
+  const client = useMemo(() => {
+    const client = new ApolloClient({
+      uri: URI_ENDPOINT,
+      cache: memoryCache || new InMemoryCache().restore(cacheRef.current || {}),
+      headers: token
+        ? { apiKey: ApiKey!, Authorization: `Bearer ${token}` }
+        : { apiKey: ApiKey! },
+    });
+    cacheRef.current = undefined;
+    return client;
+  }, [token]);
   return (
     <context.Provider value={setToken}>
       <ApolloProvider client={client}>{children}</ApolloProvider>

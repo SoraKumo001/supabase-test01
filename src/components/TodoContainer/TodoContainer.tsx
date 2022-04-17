@@ -6,12 +6,14 @@ import {
   useQueryTodoQuery,
 } from "../../generated/graphql";
 import styled from "./index.module.scss";
+import { useLoading } from "../../hooks/useLoading";
+import { useNotification } from "../../hooks/useNotification";
 
 export const TodoContainer = () => {
-  const { data, refetch } = useQueryTodoQuery();
+  const { data, refetch, loading: queryLoading } = useQueryTodoQuery();
   const [error, setError] = useState<string>();
-  const [insertTodo] = useInsertTodoMutation();
-  const [deleteTodo] = useDeleteTodoMutation();
+  const [insertTodo, { loading: insertLoading }] = useInsertTodoMutation();
+  const [deleteTodo, { loading: deleteLoading }] = useDeleteTodoMutation();
   const todoList = useMemo(() => {
     return data?.todoCollection?.edges
       .map((v) => v.node!)
@@ -25,6 +27,7 @@ export const TodoContainer = () => {
     };
     const title = form.title.value;
     const description = form.description.value;
+    setError(undefined);
     insertTodo({
       variables: { value: { title, description } },
       update: () => {
@@ -36,21 +39,28 @@ export const TodoContainer = () => {
     });
     e.preventDefault();
   };
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: number, onError: () => void) => {
+    setError(undefined);
     deleteTodo({
       variables: { id },
-      update: () => {
+      update: (_, v) => {
+        if (v.data?.deleteFromTodoCollection.affectedCount !== 1) {
+          setError("Could not delete.");
+          onError();
+        }
         refetch();
       },
     }).catch((v) => {
       setError(String(v));
+      onError();
     });
   };
+  useLoading([queryLoading, insertLoading, deleteLoading]);
+  useNotification(error);
   return (
     <div className={styled.root}>
       <form onSubmit={handleSubmit}>
         <button>Insert</button>
-        <span className={styled.error}>{error}</span>
         <div>
           <input className={styled.title} id="title" placeholder="Title" />
         </div>

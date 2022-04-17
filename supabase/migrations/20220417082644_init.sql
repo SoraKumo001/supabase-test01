@@ -99,12 +99,6 @@ GRANT ALL ON TABLE public."Todo" TO authenticated;
 GRANT ALL ON TABLE public."Todo" TO postgres;
 
 GRANT ALL ON TABLE public."Todo" TO service_role;
-CREATE POLICY "Enable DELETE/UPDATE for authenticated users only"
-    ON public."Todo"
-    AS PERMISSIVE
-    FOR ALL
-    TO public
-    USING ((auth.role() = 'authenticated'::text));
 CREATE POLICY "Enable INSERT for authenticated users only"
     ON public."Todo"
     AS PERMISSIVE
@@ -117,3 +111,9 @@ CREATE POLICY "Enable access to all users"
     FOR SELECT
     TO public
     USING (true);
+CREATE POLICY "Enable DELETE/UPDATE for users based on user_id"
+    ON public."Todo"
+    AS PERMISSIVE
+    FOR DELETE
+    TO public
+    USING ((auth.uid() = user_id));

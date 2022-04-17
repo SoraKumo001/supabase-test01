@@ -35,5 +35,6 @@ mutation deleteTodo($id: BigInt) {
     records {
       ...todo
     }
+    affectedCount
   }
 }

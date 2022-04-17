@@ -390,7 +390,7 @@ export type DeleteTodoMutationVariables = Exact<{
 }>;
 
 
-export type DeleteTodoMutation = { __typename?: 'Mutation', deleteFromTodoCollection: { __typename?: 'TodoDeleteResponse', records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, user_id: any, user?: { __typename: 'User', id: any, email?: string | null } | null }> } };
+export type DeleteTodoMutation = { __typename?: 'Mutation', deleteFromTodoCollection: { __typename?: 'TodoDeleteResponse', affectedCount: number, records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, user_id: any, user?: { __typename: 'User', id: any, email?: string | null } | null }> } };
 
 export const UserFragmentDoc = gql`
     fragment user on User {
@@ -491,6 +491,7 @@ export const DeleteTodoDocument = gql`
     records {
       ...todo
     }
+    affectedCount
   }
 }
     ${TodoFragmentDoc}`;

@@ -1,4 +1,18 @@
 .root {
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+  }
+  transform-origin: center left;
+  animation: fadeIn 0.2s;
+  transition: 0.3s;
   position: relative;
   border: solid yellowgreen 1px;
   border-radius: 4px;
@@ -38,5 +52,10 @@
     background: lightyellow;
     flex: 1;
     white-space: pre-wrap;
+  }
+  &.delete {
+    opacity: 0;
+    transform: scale(0);
+    transform-origin: center;
   }
 }
