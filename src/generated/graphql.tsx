@@ -221,6 +221,7 @@ export type Todo = {
   id: Scalars['BigInt'];
   published: Scalars['Boolean'];
   title?: Maybe<Scalars['String']>;
+  updated_at?: Maybe<Scalars['Datetime']>;
   user?: Maybe<User>;
   user_id: Scalars['UUID'];
 };
@@ -251,6 +252,7 @@ export type TodoFilter = {
   id?: InputMaybe<BigIntFilter>;
   published?: InputMaybe<BooleanFilter>;
   title?: InputMaybe<StringFilter>;
+  updated_at?: InputMaybe<DatetimeFilter>;
   user_id?: InputMaybe<UuidFilter>;
 };
 
@@ -259,6 +261,7 @@ export type TodoInsertInput = {
   description?: InputMaybe<Scalars['String']>;
   published?: InputMaybe<Scalars['Boolean']>;
   title?: InputMaybe<Scalars['String']>;
+  updated_at?: InputMaybe<Scalars['Datetime']>;
   user_id?: InputMaybe<Scalars['UUID']>;
 };
 
@@ -276,6 +279,7 @@ export type TodoOrderBy = {
   id?: InputMaybe<OrderByDirection>;
   published?: InputMaybe<OrderByDirection>;
   title?: InputMaybe<OrderByDirection>;
+  updated_at?: InputMaybe<OrderByDirection>;
   user_id?: InputMaybe<OrderByDirection>;
 };
 
@@ -284,6 +288,7 @@ export type TodoUpdateInput = {
   description?: InputMaybe<Scalars['String']>;
   published?: InputMaybe<Scalars['Boolean']>;
   title?: InputMaybe<Scalars['String']>;
+  updated_at?: InputMaybe<Scalars['Datetime']>;
   user_id?: InputMaybe<Scalars['UUID']>;
 };
 
@@ -381,7 +386,7 @@ export type UserUpdateResponse = {
 
 export type UserFragment = { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null };
 
-export type TodoFragment = { __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, published: boolean, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null };
+export type TodoFragment = { __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, updated_at?: any | null, published: boolean, user_id: any, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null };
 
 export type UpdateTodoMutationVariables = Exact<{
   id: Scalars['BigInt'];
@@ -391,26 +396,26 @@ export type UpdateTodoMutationVariables = Exact<{
 }>;
 
 
-export type UpdateTodoMutation = { __typename?: 'Mutation', updateTodoCollection: { __typename?: 'TodoUpdateResponse', affectedCount: number, records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, published: boolean, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null }> } };
+export type UpdateTodoMutation = { __typename?: 'Mutation', updateTodoCollection: { __typename?: 'TodoUpdateResponse', affectedCount: number, records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, updated_at?: any | null, published: boolean, user_id: any, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null }> } };
 
 export type InsertTodoMutationVariables = Exact<{
   value: TodoInsertInput;
 }>;
 
 
-export type InsertTodoMutation = { __typename?: 'Mutation', insertIntoTodoCollection?: { __typename?: 'TodoInsertResponse', records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, published: boolean, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null }> } | null };
+export type InsertTodoMutation = { __typename?: 'Mutation', insertIntoTodoCollection?: { __typename?: 'TodoInsertResponse', records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, updated_at?: any | null, published: boolean, user_id: any, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null }> } | null };
 
 export type QueryTodoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type QueryTodoQuery = { __typename?: 'Query', todoCollection?: { __typename?: 'TodoConnection', edges: Array<{ __typename?: 'TodoEdge', node?: { __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, published: boolean, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null } | null }> } | null };
+export type QueryTodoQuery = { __typename?: 'Query', todoCollection?: { __typename?: 'TodoConnection', edges: Array<{ __typename?: 'TodoEdge', node?: { __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, updated_at?: any | null, published: boolean, user_id: any, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null } | null }> } | null };
 
 export type DeleteTodoMutationVariables = Exact<{
   id: Scalars['BigInt'];
 }>;
 
 
-export type DeleteTodoMutation = { __typename?: 'Mutation', deleteFromTodoCollection: { __typename?: 'TodoDeleteResponse', affectedCount: number, records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, published: boolean, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null }> } };
+export type DeleteTodoMutation = { __typename?: 'Mutation', deleteFromTodoCollection: { __typename?: 'TodoDeleteResponse', affectedCount: number, records: Array<{ __typename: 'Todo', id: any, title?: string | null, description?: string | null, created_at?: any | null, updated_at?: any | null, published: boolean, user_id: any, user?: { __typename: 'User', id: any, email?: string | null, raw_user_meta_data?: string | null } | null }> } };
 
 export const UserFragmentDoc = gql`
     fragment user on User {
@@ -427,7 +432,9 @@ export const TodoFragmentDoc = gql`
   title
   description
   created_at
+  updated_at
   published
+  user_id
   user {
     ...user
   }

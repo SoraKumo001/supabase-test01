@@ -10,7 +10,9 @@ fragment todo on Todo {
   title
   description
   created_at
+  updated_at
   published
+  user_id
   user {
     ...user
   }

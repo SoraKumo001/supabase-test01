@@ -13,9 +13,10 @@ interface Props {
   onDelete?: (id: number, error: () => void) => void;
 }
 export const TodoItem = ({ todo, onDelete, onUpdate }: Props) => {
-  const { id, title, user, description, published, created_at } = todo || {
-    published: true,
-  };
+  const { id, title, user, description, published, created_at, updated_at } =
+    todo || {
+      published: true,
+    };
   const [isDelete, setDelete] = useState<boolean>();
   const [value, setValue] = useState(() => ({
     title: title || "",
@@ -75,7 +76,14 @@ export const TodoItem = ({ todo, onDelete, onUpdate }: Props) => {
       <div className={styled.name}>{user?.email}</div>
       {created_at && (
         <div className={styled.date}>
+          Created:
           {new Date(created_at).toLocaleString()}
+        </div>
+      )}
+      {updated_at && (
+        <div className={styled.date}>
+          Updated:
+          {new Date(updated_at).toLocaleString()}
         </div>
       )}
       <div className={styled.center}>
