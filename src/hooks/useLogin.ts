@@ -42,6 +42,8 @@ export const useLogin = () => {
         refresh: undefined,
       },
     });
+    document.cookie = "supabase_token=; max-age=0";
+    document.cookie = "supabase_refresh=; max-age=0";
   }, []);
   return { login, logout, loading, error };
 };

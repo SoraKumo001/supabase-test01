@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TodoList } from "../TodoList";
 import {
   Todo,
@@ -14,7 +14,7 @@ import { TodoItem } from "../TodoItem";
 import { useTableTrigger } from "../../../hooks/useLogin";
 
 export const TodoContainer = () => {
-  const { data, refetch, loading: queryLoading } = useQueryTodoQuery();
+  const { data, refetch, loading: queryLoading, client } = useQueryTodoQuery();
   const [error, setError] = useState<string>();
   const [insertTodo, { loading: insertLoading }] = useInsertTodoMutation();
   const [updateTodo, { loading: updateLoading }] = useUpdateTodoMutation();

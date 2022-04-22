@@ -1,6 +1,8 @@
 import {
   ApolloClient,
   ApolloProvider,
+  from,
+  HttpLink,
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client";
@@ -17,6 +19,7 @@ interface Props {
   memoryCache?: InMemoryCache;
 }
 import { useSystemSelector } from "../hooks/useSystemSelector";
+import { setContext } from "@apollo/client/link/context";
 export const ApolloCustomProvider = ({
   memoryCache,
   cache,
@@ -32,17 +35,29 @@ export const ApolloCustomProvider = ({
   }
   useUpdateToken(auth?.token);
   useEffect(() => {
-    () => refMemoryCache.current?.reset();
+    return () => {
+      refMemoryCache.current?.reset();
+    };
   }, [auth?.user?.sub]);
   const client = useMemo(() => {
+    const link = new HttpLink({
+      uri: URI_ENDPOINT,
+      headers: { apiKey: ApiKey! },
+    });
+    const activityMiddleware = setContext((v) => {
+      return auth?.token
+        ? {
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        : { headers: { apiKey: ApiKey! } };
+    });
     const client = new ApolloClient({
       uri: URI_ENDPOINT,
+      link: from([activityMiddleware, link]),
       cache: refMemoryCache.current!,
-      headers: auth?.token
-        ? { apiKey: ApiKey!, Authorization: `Bearer ${auth.token}` }
-        : { apiKey: ApiKey! },
     });
-    cacheRef.current = undefined;
     return client;
   }, [auth?.token]);
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
