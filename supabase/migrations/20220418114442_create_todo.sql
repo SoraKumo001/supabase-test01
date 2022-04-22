@@ -53,3 +53,5 @@ CREATE POLICY "Enable UPDATE for users based on user_id"
     TO public
     USING ((auth.uid() = user_id));    
 
+
+alter publication supabase_realtime add table "Todo";

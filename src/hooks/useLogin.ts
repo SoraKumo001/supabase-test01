@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSystemDispatch } from "./useSystemDispatch";
+import { useSystemSelector } from "./useSystemSelector";
 
 export const useLogin = () => {
   const dispatch = useSystemDispatch();
@@ -43,4 +44,52 @@ export const useLogin = () => {
     });
   }, []);
   return { login, logout, loading, error };
+};
+
+export const useUpdateToken = (refresh?: string) => {
+  const dispatch = useSystemDispatch();
+  useEffect(() => {
+    if (refresh) {
+      const handle = setInterval(() => {
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_KEY!
+        );
+        supabase.auth.setSession(refresh);
+        supabase.auth.refreshSession().then((v) => {
+          const token = v.data?.access_token;
+          const refresh = v.data?.refresh_token;
+          dispatch({
+            type: "setToken",
+            payload: {
+              token: token,
+              refresh: refresh,
+            },
+          });
+          document.cookie = token
+            ? `supabase_token=${token}; max-age=3600`
+            : "supabase_token=; max-age=0";
+          document.cookie = refresh
+            ? `supabase_refresh=${refresh}; max-age=3600`
+            : "supabase_refresh=; max-age=0";
+        });
+      }, 10 * 60 * 1000);
+      return () => clearInterval(handle);
+    }
+  }, [refresh]);
+};
+
+export const useTableTrigger = (tableName: string, onUpdate: () => void) => {
+  const token = useSystemSelector((v) => v.auth?.token);
+  useEffect(() => {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_KEY!
+    );
+    token && supabase.auth.setAuth(token);
+    const realtime = supabase.from(tableName).on("*", onUpdate).subscribe();
+    return () => {
+      realtime.unsubscribe();
+    };
+  }, [token]);
 };

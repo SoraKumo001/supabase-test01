@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Todo } from "../../../generated/graphql";
 import { classNames } from "../../../libs/className";
 import styled from "./index.module.scss";
@@ -22,6 +22,14 @@ export const TodoItem = ({ todo, onDelete, onUpdate }: Props) => {
     description: description || "",
     published,
   }));
+  useEffect(() => {
+    if (todo)
+      setValue({
+        title: title || "",
+        description: description || "",
+        published,
+      });
+  }, [todo]);
   return (
     <form
       className={classNames(

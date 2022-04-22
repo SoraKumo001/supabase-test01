@@ -11,6 +11,7 @@ import styled from "./index.module.scss";
 import { useLoading } from "../../../hooks/useLoading";
 import { useNotification } from "../../../hooks/useNotification";
 import { TodoItem } from "../TodoItem";
+import { useTableTrigger } from "../../../hooks/useLogin";
 
 export const TodoContainer = () => {
   const { data, refetch, loading: queryLoading } = useQueryTodoQuery();
@@ -25,7 +26,6 @@ export const TodoContainer = () => {
       | Todo[]
       | undefined;
   }, [data]);
-
   const handleDelete = (id: number, onError: () => void) => {
     setError(undefined);
     deleteTodo({
@@ -35,13 +35,16 @@ export const TodoContainer = () => {
           setError("Could not delete.");
           onError();
         }
-        refetch();
+        //refetch();
       },
     }).catch((v) => {
       setError(String(v));
       onError();
     });
   };
+  useTableTrigger("Todo", () => {
+    refetch({});
+  });
   const handleUpdate = (
     id: number | undefined,
     title: string,
@@ -56,7 +59,7 @@ export const TodoContainer = () => {
           if (v.data?.updateTodoCollection.affectedCount !== 1) {
             setError("Could not update.");
           }
-          refetch();
+          // refetch();
         },
       }).catch((v) => {
         setError(String(v));
@@ -65,7 +68,7 @@ export const TodoContainer = () => {
       insertTodo({
         variables: { value: { title, description, published } },
         update: () => {
-          refetch();
+          //  refetch();
         },
       }).catch((v) => {
         setError(String(v));

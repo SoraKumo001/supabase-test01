@@ -4,7 +4,8 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client";
-import React, { createContext, useMemo, useRef } from "react";
+import React, { createContext, useEffect, useMemo, useRef } from "react";
+import { useUpdateToken } from "../hooks/useLogin";
 const URI_ENDPOINT = process.env.NEXT_PUBLIC_SUPABASE_URL + "/graphql/v1";
 const ApiKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
 const context = createContext<
@@ -21,48 +22,28 @@ export const ApolloCustomProvider = ({
   cache,
   children,
 }: Props) => {
-  const token = useSystemSelector((v) => v.auth?.token);
+  const auth = useSystemSelector((v) => v.auth);
+  const refMemoryCache = useRef(memoryCache);
   const cacheRef = useRef(cache);
+  if (!refMemoryCache.current) {
+    refMemoryCache.current = new InMemoryCache().restore(
+      cacheRef.current || {}
+    );
+  }
+  useUpdateToken(auth?.token);
+  useEffect(() => {
+    () => refMemoryCache.current?.reset();
+  }, [auth?.user?.sub]);
   const client = useMemo(() => {
     const client = new ApolloClient({
       uri: URI_ENDPOINT,
-      cache: memoryCache || new InMemoryCache().restore(cacheRef.current || {}),
-      headers: token
-        ? { apiKey: ApiKey!, Authorization: `Bearer ${token}` }
+      cache: refMemoryCache.current!,
+      headers: auth?.token
+        ? { apiKey: ApiKey!, Authorization: `Bearer ${auth.token}` }
         : { apiKey: ApiKey! },
     });
     cacheRef.current = undefined;
     return client;
-  }, [token]);
+  }, [auth?.token]);
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
-
-// export const useToken = (token?: string) => {
-//   const dispatch = useContext(context);
-//   const oldToken = useRef(token);
-//   useEffect(() => {
-//     let newToken = token;
-//     if (token) {
-//       const exp = (jwt_decode(token) as { exp: number })?.exp;
-//       if (exp) {
-//         const date = new Date();
-//         const now = date.getTime();
-//         date.setUTCMilliseconds(exp);
-//         if (date.getTime() < now) {
-//           newToken = undefined;
-//         }
-//       }
-//     }
-//     dispatch(newToken);
-//     document.cookie = newToken
-//       ? `supabase_token=${newToken}; max-age=3600`
-//       : "supabase_token=; max-age=0";
-//   }, [token]);
-
-//   if (typeof window === "undefined") {
-//     if (oldToken.current !== token) {
-//       dispatch(token);
-//       oldToken.current = token;
-//     }
-//   }
-// };

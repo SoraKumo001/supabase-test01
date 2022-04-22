@@ -4,7 +4,8 @@ import { config } from "dotenv";
 const { parsed } = config({ path: ".env.local" });
 
 const endpoint = parsed?.NEXT_PUBLIC_SUPABASE_URL;
-const key = parsed?.SUPABASE_KEY;
+const key = parsed?.NEXT_PRIVATE_SUPABASE_KEY;
+//const key = parsed?.NEXT_PUBLIC_SUPABASE_KEY;
 
 const createUser = async ({
   email,

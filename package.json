@@ -7,14 +7,14 @@
     "@apollo/client": "^3.5.10",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
-    "@mui/icons-material": "^5.6.1",
-    "@mui/material": "^5.6.1",
+    "@mui/icons-material": "^5.6.2",
+    "@mui/material": "^5.6.2",
     "graphql": "^16.3.0",
     "jwt-decode": "^3.1.2",
     "next": "^12.1.5",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "sass": "^1.50.0"
+    "sass": "^1.50.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.6.2",
@@ -22,9 +22,10 @@
     "@graphql-codegen/typescript": "2.4.8",
     "@graphql-codegen/typescript-operations": "2.3.5",
     "@graphql-codegen/typescript-react-apollo": "3.2.11",
-    "@supabase/supabase-js": "^1.34.0",
-    "@types/react": "^18.0.5",
-    "@types/react-dom": "^18.0.1",
+    "@supabase/supabase-js": "^1.35.1",
+    "@types/node-fetch": "^2.6.1",
+    "@types/react": "^18.0.6",
+    "@types/react-dom": "^18.0.2",
     "dotenv": "^16.0.0",
     "toml": "^3.0.0",
     "typescript": "^4.6.3"
@@ -33,8 +34,8 @@
     "dev": "next",
     "start": "next start",
     "build": "next build",
-    "supabase:start": "supabase:start",
-    "supabase:stop": "supabase:stop",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
     "supabase:commit": "supabase:commmit",
     "generate": "graphql-codegen --config codegen.json",
     "create:user": "ts-node -s bin/create-user a@example.com a && ts-node -s bin/create-user b@example.com b"

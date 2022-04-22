@@ -1,7 +1,7 @@
 import { InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 import { getMarkupFromTree } from "@apollo/client/react/ssr";
 import { AppContext, AppProps } from "next/app";
-import React from "react";
+import React, { useRef } from "react";
 import { renderToString } from "react-dom/server.browser";
 import { AuthContainer } from "../components/AuthConteiner.tsx";
 import { LoadingContainer } from "../components/LoadingContainer";
@@ -21,7 +21,7 @@ const App = (
   const { Component, cache, memoryCache, token, refresh } = props;
   const user = getJwtInfo(token);
   return (
-    <SystemContext.Provider value={{ user: { token, refresh, ...user } }}>
+    <SystemContext.Provider value={{ auth: { token, refresh, user } }}>
       <ApolloCustomProvider cache={cache} memoryCache={memoryCache}>
         <AuthContainer />
         <Component />
