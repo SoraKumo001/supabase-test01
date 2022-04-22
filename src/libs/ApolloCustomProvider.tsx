@@ -27,6 +27,8 @@ export const ApolloCustomProvider = ({
 }: Props) => {
   const auth = useSystemSelector((v) => v.auth);
   const refMemoryCache = useRef(memoryCache);
+  const refToken = useRef(auth?.token);
+  refToken.current = auth?.token;
   const cacheRef = useRef(cache);
   if (!refMemoryCache.current) {
     refMemoryCache.current = new InMemoryCache().restore(
@@ -45,13 +47,13 @@ export const ApolloCustomProvider = ({
       headers: { apiKey: ApiKey! },
     });
     const activityMiddleware = setContext((v) => {
-      return auth?.token
+      return refToken.current
         ? {
             headers: {
-              Authorization: `Bearer ${auth.token}`,
+              Authorization: `Bearer ${refToken.current}`,
             },
           }
-        : { headers: { apiKey: ApiKey! } };
+        : {};
     });
     const client = new ApolloClient({
       uri: URI_ENDPOINT,

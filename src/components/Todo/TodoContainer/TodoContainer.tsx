@@ -14,7 +14,13 @@ import { TodoItem } from "../TodoItem";
 import { useTableTrigger } from "../../../hooks/useLogin";
 
 export const TodoContainer = () => {
-  const { data, refetch, loading: queryLoading, client } = useQueryTodoQuery();
+  const {
+    data,
+    refetch,
+    loading: queryLoading,
+    client,
+    fetchMore,
+  } = useQueryTodoQuery();
   const [error, setError] = useState<string>();
   const [insertTodo, { loading: insertLoading }] = useInsertTodoMutation();
   const [updateTodo, { loading: updateLoading }] = useUpdateTodoMutation();
@@ -43,7 +49,7 @@ export const TodoContainer = () => {
     });
   };
   useTableTrigger("Todo", () => {
-    refetch({});
+    refetch();
   });
   const handleUpdate = (
     id: number | undefined,
