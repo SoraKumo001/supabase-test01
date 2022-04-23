@@ -48,7 +48,8 @@ export const useLogin = () => {
   return { login, logout, loading, error };
 };
 
-export const useUpdateToken = (refresh?: string) => {
+export const useUpdateToken = () => {
+  const refresh = useSystemSelector((v) => v.auth?.refresh);
   const dispatch = useSystemDispatch();
   useEffect(() => {
     if (refresh) {

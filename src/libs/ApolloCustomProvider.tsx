@@ -6,13 +6,10 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client";
-import React, { createContext, useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useUpdateToken } from "../hooks/useLogin";
 const URI_ENDPOINT = process.env.NEXT_PUBLIC_SUPABASE_URL + "/graphql/v1";
 const ApiKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
-const context = createContext<
-  React.Dispatch<React.SetStateAction<string | undefined>>
->(undefined as never);
 interface Props {
   children?: React.ReactNode;
   cache?: NormalizedCacheObject;
@@ -26,31 +23,27 @@ export const ApolloCustomProvider = ({
   children,
 }: Props) => {
   const auth = useSystemSelector((v) => v.auth);
-  const refMemoryCache = useRef(memoryCache);
-  const refToken = useRef(auth?.token);
-  refToken.current = auth?.token;
-  const cacheRef = useRef(cache);
-  if (!refMemoryCache.current) {
-    refMemoryCache.current = new InMemoryCache().restore(
-      cacheRef.current || {}
-    );
-  }
-  useUpdateToken(auth?.token);
+  const property = useRef({ memoryCache, token: auth?.token, cache }).current;
+  property.token = auth?.token;
+  useUpdateToken();
   useEffect(() => {
     return () => {
-      refMemoryCache.current?.reset();
+      property.memoryCache?.reset();
     };
   }, [auth?.user?.sub]);
   const client = useMemo(() => {
+    if (!property.memoryCache) {
+      property.memoryCache = new InMemoryCache().restore(property.cache || {});
+    }
     const link = new HttpLink({
       uri: URI_ENDPOINT,
       headers: { apiKey: ApiKey! },
     });
     const activityMiddleware = setContext((v) => {
-      return refToken.current
+      return property.token
         ? {
             headers: {
-              Authorization: `Bearer ${refToken.current}`,
+              Authorization: `Bearer ${property.token}`,
             },
           }
         : {};
@@ -58,9 +51,9 @@ export const ApolloCustomProvider = ({
     const client = new ApolloClient({
       uri: URI_ENDPOINT,
       link: from([activityMiddleware, link]),
-      cache: refMemoryCache.current!,
+      cache: property.memoryCache!,
     });
     return client;
-  }, [auth?.token]);
+  }, []);
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
