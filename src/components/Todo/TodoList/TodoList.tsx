@@ -4,6 +4,7 @@ import { TodoItem } from "../TodoItem";
 import styled from "./index.module.scss";
 interface Props {
   todoList?: Todo[];
+  onUpload: (blob: Blob, uploaded: (id?: string) => void) => void;
   onDelete: (id: number, error: () => void) => void;
   onUpdate: (
     id: number,
@@ -12,7 +13,7 @@ interface Props {
     visible: boolean
   ) => void;
 }
-export const TodoList = ({ todoList, onUpdate, onDelete }: Props) => {
+export const TodoList = ({ todoList, onUpload, onUpdate, onDelete }: Props) => {
   const list = todoList?.reduce(
     (result, todo) => ({
       ...result,
@@ -33,6 +34,7 @@ export const TodoList = ({ todoList, onUpdate, onDelete }: Props) => {
                 <TodoItem
                   key={todo.id}
                   todo={todo}
+                  onUpload={onUpload}
                   onDelete={onDelete}
                   onUpdate={onUpdate}
                 />

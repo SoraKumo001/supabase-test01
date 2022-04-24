@@ -51,6 +51,13 @@
   }
   .description {
     flex: 1;
+    table {
+      th,
+      td {
+        border-bottom: 2px #888888 solid;
+      }
+    }
+    overflow: auto;
   }
   .name {
     font-size: 12px;

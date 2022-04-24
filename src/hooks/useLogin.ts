@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { useCallback, useEffect, useState } from "react";
 import { useSystemDispatch } from "./useSystemDispatch";
 import { useSystemSelector } from "./useSystemSelector";
-
+import { nanoid } from "nanoid";
 export const useLogin = () => {
   const dispatch = useSystemDispatch();
   const [error, setError] = useState<string>();
@@ -95,4 +95,24 @@ export const useTableTrigger = (tableName: string, onUpdate: () => void) => {
       realtime.unsubscribe();
     };
   }, [token]);
+};
+
+export const useUpload = () => {
+  const token = useSystemSelector((v) => v.auth?.token);
+  const upload = useCallback(
+    async (blob: Blob) => {
+      if (!token) return;
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_KEY!
+      );
+      supabase.auth.setAuth(token);
+      const id = nanoid();
+      const result = await supabase.storage.from("storage").upload(id, blob);
+      if (result.error) return undefined;
+      return id;
+    },
+    [token]
+  );
+  return { upload };
 };

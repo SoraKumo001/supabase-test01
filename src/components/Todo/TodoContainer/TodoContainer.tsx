@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { TodoList } from "../TodoList";
 import {
   Todo,
@@ -11,20 +11,15 @@ import styled from "./index.module.scss";
 import { useLoading } from "../../../hooks/useLoading";
 import { useNotification } from "../../../hooks/useNotification";
 import { TodoItem } from "../TodoItem";
-import { useTableTrigger } from "../../../hooks/useLogin";
+import { useTableTrigger, useUpload } from "../../../hooks/useLogin";
 
 export const TodoContainer = () => {
-  const {
-    data,
-    refetch,
-    loading: queryLoading,
-    client,
-    fetchMore,
-  } = useQueryTodoQuery();
+  const { data, refetch, loading: queryLoading } = useQueryTodoQuery();
   const [error, setError] = useState<string>();
   const [insertTodo, { loading: insertLoading }] = useInsertTodoMutation();
   const [updateTodo, { loading: updateLoading }] = useUpdateTodoMutation();
   const [deleteTodo, { loading: deleteLoading }] = useDeleteTodoMutation();
+  const { upload } = useUpload();
   const todoList = useMemo(() => {
     return data?.todoCollection?.edges
       .map((v) => v.node!)
@@ -81,13 +76,17 @@ export const TodoContainer = () => {
       });
     }
   };
+  const handleUpload = async (blob: Blob, uploaded: (id?: string) => void) => {
+    upload(blob).then(uploaded);
+  };
   useLoading([queryLoading, insertLoading, deleteLoading, updateLoading]);
   useNotification(error);
   return (
     <div className={styled.root}>
-      <TodoItem onUpdate={handleUpdate} editable={true} />
+      <TodoItem onUpdate={handleUpdate} editable={true} onUpload={() => {}} />
       <TodoList
         todoList={todoList}
+        onUpload={handleUpload}
         onUpdate={handleUpdate}
         onDelete={handleDelete}
       />

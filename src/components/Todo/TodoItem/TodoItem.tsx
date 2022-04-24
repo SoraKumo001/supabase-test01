@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Todo } from "../../../generated/graphql";
 import { classNames } from "../../../libs/className";
 import Editor from "@monaco-editor/react";
@@ -6,12 +6,12 @@ import styled from "./index.module.scss";
 import IconEdit from "@mui/icons-material/Edit";
 import IconSave from "@mui/icons-material/Save";
 import { editor } from "monaco-editor";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { Markdown } from "../../Markdown";
 
 interface Props {
   todo?: Todo;
   editable?: boolean;
+  onUpload: (blob: Blob, uploaded: (id?: string) => void) => void;
   onUpdate: (
     id: number,
     title: string,
@@ -49,8 +49,10 @@ export const TodoItem = ({
   todo,
   onDelete,
   onUpdate,
+  onUpload,
   editable = false,
 }: Props) => {
+  const refEditor = useRef<editor.IStandaloneCodeEditor>();
   const { id, title, user, description, published, created_at, updated_at } =
     todo || {
       published: true,
@@ -83,6 +85,35 @@ export const TodoItem = ({
         onUpdate(id, value.title, value.description, value.published);
         if (id) setEdit(false);
         else setValue({ title: "", description: "", published: true });
+      }}
+      onDragOver={(e) => {
+        if (isEdit) {
+          e.dataTransfer.dropEffect = "move";
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }}
+      onPaste={() => {
+        navigator.clipboard.read().then((items) => {
+          items.forEach(async (item) => {
+            onUpload(await item.getType("image/png"), () => {});
+          });
+        });
+      }}
+      onDrop={(e) => {
+        const length = e.dataTransfer.files.length;
+        if (length) {
+          e.stopPropagation();
+          e.preventDefault();
+          for (let i = 0; i < length; i++) {
+            onUpload(e.dataTransfer.files[i], (id) => {
+              if (id && refEditor.current)
+                refEditor.current.trigger("keyboard", "type", {
+                  text: `![](!${id})`,
+                });
+            });
+          }
+        }
       }}
     >
       {id && (
@@ -121,14 +152,12 @@ export const TodoItem = ({
           beforeMount={(monaco) => {
             monaco.editor.defineTheme("custom", thems);
           }}
+          onMount={(e) => {
+            refEditor.current = e;
+          }}
         />
       ) : (
-        <ReactMarkdown
-          className={styled.description}
-          remarkPlugins={[remarkGfm]}
-        >
-          {description || ""}
-        </ReactMarkdown>
+        <Markdown className={styled.description}>{description || ""}</Markdown>
       )}
       <div className={styled.name}>{user?.email}</div>
       {created_at && (
