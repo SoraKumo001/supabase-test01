@@ -5,13 +5,19 @@ import Editor from "@monaco-editor/react";
 import styled from "./index.module.scss";
 import IconEdit from "@mui/icons-material/Edit";
 import IconSave from "@mui/icons-material/Save";
+import IconStop from "@mui/icons-material/StopCircle";
 import { editor } from "monaco-editor";
 import { Markdown } from "../../Markdown";
+import { useSystemSelector } from "../../../hooks/useSystemSelector";
 
 interface Props {
   todo?: Todo;
   editable?: boolean;
-  onUpload: (blob: Blob, uploaded: (id?: string) => void) => void;
+  onUpload: (
+    path: string,
+    blob: Blob,
+    uploaded: (name?: string) => void
+  ) => void;
   onUpdate: (
     id: number,
     title: string,
@@ -52,6 +58,7 @@ export const TodoItem = ({
   onUpload,
   editable = false,
 }: Props) => {
+  const userId = useSystemSelector((v) => v.auth?.user?.sub);
   const refEditor = useRef<editor.IStandaloneCodeEditor>();
   const { id, title, user, description, published, created_at, updated_at } =
     todo || {
@@ -72,7 +79,11 @@ export const TodoItem = ({
         published,
       });
   }, [todo]);
-
+  const isOwner = user?.id === userId;
+  const handleCancel = () => {
+    setValue({ title: title || "", description: description || "", published });
+    setEdit(false);
+  };
   return (
     <form
       className={classNames(
@@ -96,7 +107,12 @@ export const TodoItem = ({
       onPaste={() => {
         navigator.clipboard.read().then((items) => {
           items.forEach(async (item) => {
-            onUpload(await item.getType("image/png"), () => {});
+            onUpload(id, await item.getType("image/png"), (id) => {
+              if (id && refEditor.current)
+                refEditor.current.trigger("keyboard", "type", {
+                  text: `![](!${id})`,
+                });
+            });
           });
         });
       }}
@@ -106,7 +122,7 @@ export const TodoItem = ({
           e.stopPropagation();
           e.preventDefault();
           for (let i = 0; i < length; i++) {
-            onUpload(e.dataTransfer.files[i], (id) => {
+            onUpload(id, e.dataTransfer.files[i], (id) => {
               if (id && refEditor.current)
                 refEditor.current.trigger("keyboard", "type", {
                   text: `![](!${id})`,
@@ -116,7 +132,7 @@ export const TodoItem = ({
         }
       }}
     >
-      {id && (
+      {isOwner && (
         <div
           className={styled.close}
           onClick={() => {
@@ -172,25 +188,36 @@ export const TodoItem = ({
           {new Date(updated_at).toLocaleString()}
         </div>
       )}
-      <div className={styled.center}>
-        {isEdit ? (
-          <button className={styled.reset}>
-            <IconSave className={styled.button} />
-          </button>
-        ) : (
-          <IconEdit className={styled.button} onClick={() => setEdit(true)} />
-        )}
-        <label className={styled.center}>
-          <input
-            type="checkbox"
-            checked={value.published}
-            onChange={(e) =>
-              setValue((v) => ({ ...v, published: e.target.checked }))
-            }
-          />
-          <div>public</div>
-        </label>
-      </div>
+      {isOwner && (
+        <div className={styled.footer}>
+          <div>
+            {isEdit ? (
+              <>
+                <button className={styled.reset}>
+                  <IconSave className={styled.button} />
+                </button>
+                <IconStop className={styled.button} onClick={handleCancel} />
+              </>
+            ) : (
+              <IconEdit
+                className={styled.button}
+                onClick={() => setEdit(true)}
+              />
+            )}
+          </div>
+          <label className={styled.label}>
+            <input
+              type="checkbox"
+              checked={value.published}
+              disabled={!isEdit}
+              onChange={(e) =>
+                setValue((v) => ({ ...v, published: e.target.checked }))
+              }
+            />
+            <div>published</div>
+          </label>
+        </div>
+      )}
     </form>
   );
 };

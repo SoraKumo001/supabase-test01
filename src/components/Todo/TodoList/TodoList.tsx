@@ -1,10 +1,13 @@
-import { useState } from "react";
 import { Todo } from "../../../generated/graphql";
 import { TodoItem } from "../TodoItem";
 import styled from "./index.module.scss";
 interface Props {
   todoList?: Todo[];
-  onUpload: (blob: Blob, uploaded: (id?: string) => void) => void;
+  onUpload: (
+    path: string,
+    blob: Blob,
+    uploaded: (name?: string) => void
+  ) => void;
   onDelete: (id: number, error: () => void) => void;
   onUpdate: (
     id: number,

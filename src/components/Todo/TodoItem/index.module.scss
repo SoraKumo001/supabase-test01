@@ -78,18 +78,24 @@
   &:not(.published) {
     border-color: red;
   }
-  .center {
+  .footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+  }
+  .label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
   }
 
   .button {
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 4px;
+    margin: 0 4px;
     background: #dddddd44;
     border-radius: 100%;
     &:hover {

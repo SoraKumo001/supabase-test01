@@ -100,17 +100,17 @@ export const useTableTrigger = (tableName: string, onUpdate: () => void) => {
 export const useUpload = () => {
   const token = useSystemSelector((v) => v.auth?.token);
   const upload = useCallback(
-    async (blob: Blob) => {
+    async (path: string, blob: Blob) => {
       if (!token) return;
       const supabase = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_KEY!
       );
       supabase.auth.setAuth(token);
-      const id = nanoid();
-      const result = await supabase.storage.from("storage").upload(id, blob);
+      const name = `${path}/${nanoid()}`;
+      const result = await supabase.storage.from("storage").upload(name, blob);
       if (result.error) return undefined;
-      return id;
+      return name;
     },
     [token]
   );

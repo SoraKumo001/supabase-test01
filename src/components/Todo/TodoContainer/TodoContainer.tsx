@@ -10,10 +10,12 @@ import {
 import styled from "./index.module.scss";
 import { useLoading } from "../../../hooks/useLoading";
 import { useNotification } from "../../../hooks/useNotification";
-import { TodoItem } from "../TodoItem";
 import { useTableTrigger, useUpload } from "../../../hooks/useLogin";
+import IconAdd from "@mui/icons-material/AddCardOutlined";
+import { useSystemSelector } from "../../../hooks/useSystemSelector";
 
 export const TodoContainer = () => {
+  const auth = useSystemSelector((v) => v.auth);
   const { data, refetch, loading: queryLoading } = useQueryTodoQuery();
   const [error, setError] = useState<string>();
   const [insertTodo, { loading: insertLoading }] = useInsertTodoMutation();
@@ -36,7 +38,6 @@ export const TodoContainer = () => {
           setError("Could not delete.");
           onError();
         }
-        //refetch();
       },
     }).catch((v) => {
       setError(String(v));
@@ -60,7 +61,6 @@ export const TodoContainer = () => {
           if (v.data?.updateTodoCollection.affectedCount !== 1) {
             setError("Could not update.");
           }
-          // refetch();
         },
       }).catch((v) => {
         setError(String(v));
@@ -68,22 +68,32 @@ export const TodoContainer = () => {
     } else {
       insertTodo({
         variables: { value: { title, description, published } },
-        update: () => {
-          //  refetch();
-        },
+        update: () => {},
       }).catch((v) => {
         setError(String(v));
       });
     }
   };
-  const handleUpload = async (blob: Blob, uploaded: (id?: string) => void) => {
-    upload(blob).then(uploaded);
+  const handleUpload = async (
+    path: string,
+    blob: Blob,
+    uploaded: (id?: string) => void
+  ) => {
+    upload(path, blob).then(uploaded);
   };
   useLoading([queryLoading, insertLoading, deleteLoading, updateLoading]);
   useNotification(error);
   return (
     <div className={styled.root}>
-      <TodoItem onUpdate={handleUpdate} editable={true} onUpload={() => {}} />
+      {auth?.user && (
+        <div
+          className={styled.add}
+          onClick={() => handleUpdate(undefined, "", "", false)}
+        >
+          <IconAdd />
+          Add
+        </div>
+      )}
       <TodoList
         todoList={todoList}
         onUpload={handleUpload}

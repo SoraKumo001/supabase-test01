@@ -15,4 +15,16 @@
     align-items: center;
     margin-left: 8px;
   }
+  .add {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    background: #dddddd;
+    font-weight: bold;
+    svg {
+      margin-right: 8px;
+    }
+  }
 }
