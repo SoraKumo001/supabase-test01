@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
 import { Todo } from "../../../generated/graphql";
 import { classNames } from "../../../libs/className";
+import Editor from "@monaco-editor/react";
 import styled from "./index.module.scss";
+import IconEdit from "@mui/icons-material/Edit";
+import IconSave from "@mui/icons-material/Save";
+import { editor } from "monaco-editor";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 interface Props {
   todo?: Todo;
+  editable?: boolean;
   onUpdate: (
     id: number,
     title: string,
@@ -12,7 +20,37 @@ interface Props {
   ) => void;
   onDelete?: (id: number, error: () => void) => void;
 }
-export const TodoItem = ({ todo, onDelete, onUpdate }: Props) => {
+
+const EditorOptions: editor.IStandaloneEditorConstructionOptions = {
+  lineNumbers: "off",
+  folding: false,
+  selectOnLineNumbers: false,
+  minimap: { enabled: false },
+  glyphMargin: false,
+  scrollBeyondLastLine: false,
+  lineDecorationsWidth: 0,
+};
+const thems: editor.IStandaloneThemeData = {
+  base: "vs",
+  inherit: true,
+  colors: {
+    "editor.foreground": "#000000",
+    "editor.background": "#00000000",
+    "editorCursor.foreground": "#8B0000",
+    "editor.lineHighlightBackground": "#00000000",
+    "editorLineNumber.foreground": "#008800",
+    "editor.selectionBackground": "#88000030",
+    "editor.inactiveSelectionBackground": "#88000015",
+  },
+  rules: [],
+};
+
+export const TodoItem = ({
+  todo,
+  onDelete,
+  onUpdate,
+  editable = false,
+}: Props) => {
   const { id, title, user, description, published, created_at, updated_at } =
     todo || {
       published: true,
@@ -23,6 +61,7 @@ export const TodoItem = ({ todo, onDelete, onUpdate }: Props) => {
     description: description || "",
     published,
   }));
+  const [isEdit, setEdit] = useState(editable);
   useEffect(() => {
     if (todo)
       setValue({
@@ -31,6 +70,7 @@ export const TodoItem = ({ todo, onDelete, onUpdate }: Props) => {
         published,
       });
   }, [todo]);
+
   return (
     <form
       className={classNames(
@@ -41,9 +81,8 @@ export const TodoItem = ({ todo, onDelete, onUpdate }: Props) => {
       onSubmit={(e) => {
         e.preventDefault();
         onUpdate(id, value.title, value.description, value.published);
-        if (!id) {
-          setValue({ title: "", description: "", published: true });
-        }
+        if (id) setEdit(false);
+        else setValue({ title: "", description: "", published: true });
       }}
     >
       {id && (
@@ -59,20 +98,38 @@ export const TodoItem = ({ todo, onDelete, onUpdate }: Props) => {
           ×
         </div>
       )}
-      <input
-        className={styled.title}
-        value={value.title}
-        onChange={(e) => setValue((v) => ({ ...v, title: e.target.value }))}
-        placeholder="Title"
-      />
-      <textarea
-        value={value.description}
-        className={styled.description}
-        onChange={(e) =>
-          setValue((v) => ({ ...v, description: e.target.value }))
-        }
-        placeholder="Description"
-      />
+      {isEdit ? (
+        <input
+          className={styled.title}
+          value={value.title}
+          onChange={(e) => setValue((v) => ({ ...v, title: e.target.value }))}
+          placeholder="Title"
+        />
+      ) : (
+        <div className={styled.title}>{title}</div>
+      )}
+      {isEdit ? (
+        <Editor
+          theme={"custom"}
+          className={styled.description}
+          defaultLanguage="markdown"
+          value={value.description}
+          options={EditorOptions}
+          onChange={(value) =>
+            setValue((v) => ({ ...v, description: value || "" }))
+          }
+          beforeMount={(monaco) => {
+            monaco.editor.defineTheme("custom", thems);
+          }}
+        />
+      ) : (
+        <ReactMarkdown
+          className={styled.description}
+          remarkPlugins={[remarkGfm]}
+        >
+          {description || ""}
+        </ReactMarkdown>
+      )}
       <div className={styled.name}>{user?.email}</div>
       {created_at && (
         <div className={styled.date}>
@@ -87,7 +144,13 @@ export const TodoItem = ({ todo, onDelete, onUpdate }: Props) => {
         </div>
       )}
       <div className={styled.center}>
-        <button>{id ? "Update" : "Insert"}</button>
+        {isEdit ? (
+          <button className={styled.reset}>
+            <IconSave className={styled.button} />
+          </button>
+        ) : (
+          <IconEdit className={styled.button} onClick={() => setEdit(true)} />
+        )}
         <label className={styled.center}>
           <input
             type="checkbox"

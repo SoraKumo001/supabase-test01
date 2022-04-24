@@ -85,7 +85,7 @@ export const TodoContainer = () => {
   useNotification(error);
   return (
     <div className={styled.root}>
-      <TodoItem onUpdate={handleUpdate} />
+      <TodoItem onUpdate={handleUpdate} editable={true} />
       <TodoList
         todoList={todoList}
         onUpdate={handleUpdate}
