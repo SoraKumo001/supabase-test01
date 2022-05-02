@@ -1,8 +1,3 @@
-drop extension if exists pg_graphql;
-create extension if not exists pg_graphql;
-select graphql.rebuild_schema();
-
-
 create or replace function graphql.build_update(
     ast jsonb,
     variable_definitions jsonb = '[]',
@@ -230,3 +225,6 @@ begin
     return result;
 end;
 $$;
+
+
+

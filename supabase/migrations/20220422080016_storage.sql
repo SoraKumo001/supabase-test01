@@ -4,6 +4,8 @@ create policy "Public Access"
   on storage.objects for select
   using ( bucket_id = 'public' or auth.uid() = owner);
 
+ALTER TABLE IF EXISTS storage."objects" ENABLE ROW LEVEL SECURITY;
+
 CREATE POLICY "Enable INSERT for authenticated users only"
     ON storage.objects
     AS PERMISSIVE
