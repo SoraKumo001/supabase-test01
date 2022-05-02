@@ -12,19 +12,15 @@ Sample SSR using supabase(GraphQL) + Next.js + React18
 
 <https://github.com/SoraKumo001/supabase-test01>
 
-## Custom version supabase-cli
+## We use an informal cli
 
-The official CLI does not work with GraphQL functionality, so a custom version must be used
-
-<https://github.com/SoraKumo001/supabase-cli/releases>
+<https://www.npmjs.com/package/supabase-cli>
 
 ## How to use the local environment
 
-- Install spabase-cli  
-  <https://github.com/supabase/cli>
 - Install npm package  
   yarn
 - Start supabase  
-  supabase start
-- Create test user(a@a/a)  
+  yarn supabase:start
+- Create test user(a@example.com/a,a@example.com/b)  
   yarn create:user
