@@ -225,6 +225,3 @@ begin
     return result;
 end;
 $$;
-
-
-
